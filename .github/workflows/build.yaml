@@ -1,0 +1,47 @@
+name: build
+
+on:
+  push:
+    branches:
+      - 'main'
+  workflow_dispatch:
+  
+permissions: write-all
+
+env:
+  # Use docker.io for Docker Hub if empty
+  REGISTRY: ghcr.io
+  # github.repository as <account>/<repo>
+  # IMAGE_NAME: ${{ github.repository }}
+
+jobs:
+  docker:
+    runs-on: ubuntu-latest
+    steps:
+      -
+        name: Checkout
+        uses: actions/checkout@v4
+      -
+        name: Login to Github Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      -
+        name: lowercase repo
+        run: echo "IMAGE_NAME=${GITHUB_REPOSITORY@L}" >> "${GITHUB_ENV}"
+      -
+        name: Get supabase/postgres version
+        id: tag_version
+        run: echo "new_tag=$(grep "SUPABASE_PG_VERSION=" Dockerfile | cut -f2 -d"=")"  >> $GITHUB_OUTPUT     
+      -
+        name: Build and push
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: |
+            ghcr.io/${{ env.IMAGE_NAME }}:latest
+            ghcr.io/${{ env.IMAGE_NAME }}:${{ steps.tag_version.outputs.new_tag }}
+   
