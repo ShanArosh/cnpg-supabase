@@ -122,3 +122,6 @@ COPY scripts/webhooks.sql /docker-entrypoint-initdb.d/init-scripts/98-webhooks.s
 COPY scripts/roles.sql /docker-entrypoint-initdb.d/init-scripts/99-roles.sql
 COPY scripts/jwt.sql /docker-entrypoint-initdb.d/init-scripts/99-jwt.sql
 
+# Change the uid of postgres to 26
+RUN usermod -u 26 postgres
+USER 26
