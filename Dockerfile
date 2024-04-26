@@ -123,7 +123,7 @@ COPY scripts/roles.sql /docker-entrypoint-initdb.d/init-scripts/99-roles.sql
 COPY scripts/jwt.sql /docker-entrypoint-initdb.d/init-scripts/99-jwt.sql
 
 # CNPG uses postInitApplicationSQLRefsFolder: "/etc/post-init-application-sql"  for migrations
-RUN mv /docker-entrypoint-initdb.d/ /etc/post-init-application-sql/
+# RUN mv /docker-entrypoint-initdb.d/ /etc/post-init-application-sql/
 
 # Change the uid of postgres to 26
 RUN usermod -u 26 postgres
